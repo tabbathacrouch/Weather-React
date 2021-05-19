@@ -44,6 +44,7 @@ function App() {
     <div className="container">
       <div className="date-time">{moment().format("MMMM Do YYYY, h:mm a")}</div>
       <div className="title">Compare the current weather of two cities.</div>
+
       <div className="main">
         <div className="city1">
           <div className="search-box">
@@ -58,27 +59,29 @@ function App() {
           </div>
 
           {typeof weatherCity1.main != "undefined" ? (
-            <div
-              className={
-                typeof weatherCity1.main === "undefined"
-                  ? "left"
-                  : `left ${weatherCity1.weather[0].main}`
-              }
-            >
-              <div className="location-box">
-                <div className="location">
-                  {weatherCity1.name}, {weatherCity1.sys.country}
+            <>
+              <div
+                className={
+                  typeof weatherCity1.main === "undefined"
+                    ? "left"
+                    : `left ${weatherCity1.weather[0].main}`
+                }
+              >
+                <div className="location-box">
+                  <div className="location">
+                    {weatherCity1.name}, {weatherCity1.sys.country}
+                  </div>
+                </div>
+                <div className="weather-box">
+                  <div className="temp">
+                    {Math.round(weatherCity1.main.temp)}°F
+                    <br />
+                    {Math.round(FtoC(weatherCity1.main.temp))}°C
+                  </div>
+                  <div className="weather">{weatherCity1.weather[0].main}</div>
                 </div>
               </div>
-              <div className="weather-box">
-                <div className="temp">
-                  {Math.round(weatherCity1.main.temp)}°F
-                  <br />
-                  {Math.round(FtoC(weatherCity1.main.temp))}°C
-                </div>
-                <div className="weather">{weatherCity1.weather[0].main}</div>
-              </div>
-            </div>
+            </>
           ) : (
             ""
           )}
