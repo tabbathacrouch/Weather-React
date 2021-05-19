@@ -1,85 +1,126 @@
 import React, { useState } from "react";
+import moment from "moment";
 
-const api = {
-  key: "ab2614e6f9cfa82b8b82473aaa05bfec",
-  base: "https://api.openweathermap.org/data/2.5/",
+const FtoC = (f) => {
+  const c = ((f - 32) * 5) / 9;
+  return c;
 };
 
 function App() {
-  const [query, setQuery] = useState("");
-  const [weather, setWeather] = useState({});
+  const [query1, setQuery1] = useState("");
+  const [query2, setQuery2] = useState("");
+  const [weatherCity1, setWeatherCity1] = useState({});
+  const [weatherCity2, setWeatherCity2] = useState({});
 
-  const handleSearch = (event) => {
+  const handleSearchCity1 = (event) => {
     if (event.key === "Enter") {
-      fetch(`${api.base}weather?q=${query}&units=imperial&APPID=${api.key}`)
+      fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${query1}&units=imperial&APPID=${process.env.REACT_APP_API_KEY}`
+      )
         .then((response) => response.json())
         .then((result) => {
-          setWeather(result);
-          setQuery("");
+          setWeatherCity1(result);
+          setQuery1("");
           console.log(result);
         });
     }
   };
 
-  const dateBuilder = (D) => {
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const day = days[D.getDay()];
-    const date = D.getDate();
-    const month = months[D.getMonth()];
-    const year = D.getFullYear();
-
-    return `${day} ${month} ${date}, ${year}`;
+  const handleSearchCity2 = (event) => {
+    if (event.key === "Enter") {
+      fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${query2}&units=imperial&APPID=${process.env.REACT_APP_API_KEY}`
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          setWeatherCity2(result);
+          setQuery2("");
+          console.log(result);
+        });
+    }
   };
 
   return (
-    <div className={(typeof weather.main != "undefined") ? ((weather.main.temp < 60) ? 'App cold' : 'App') : 'App'}>
-      <main>
-        <div className="search-box">
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search..."
-            onChange={(event) => setQuery(event.target.value)}
-            value={query}
-            onKeyPress={handleSearch}
-          />
-        </div>
-        {(typeof weather.main != "undefined") ? (
-          <div>
-            <div className="location-box">
-              <div className="location">{weather.name}, {weather.sys.country}</div>
-              <div className="date">{dateBuilder(new Date())}</div>
-            </div>
-            <div className="weather-box">
-              <div className="temp">{Math.round(weather.main.temp)}°F</div>
-              <div className="weather">{weather.weather[0].main}</div>
-            </div>
+    <div className="container">
+      <div className="date-time">{moment().format("MMMM Do YYYY, h:mm a")}</div>
+      <div className="title">Compare the current weather of two cities.</div>
+      <div className="main">
+        <div className="city1">
+          <div className="search-box">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search..."
+              onChange={(event) => setQuery1(event.target.value)}
+              value={query1}
+              onKeyPress={handleSearchCity1}
+            />
           </div>
-        ) : ('')}
-      </main>
+
+          {typeof weatherCity1.main != "undefined" ? (
+            <div
+              className={
+                typeof weatherCity1.main === "undefined"
+                  ? "left"
+                  : `left ${weatherCity1.weather[0].main}`
+              }
+            >
+              <div className="location-box">
+                <div className="location">
+                  {weatherCity1.name}, {weatherCity1.sys.country}
+                </div>
+              </div>
+              <div className="weather-box">
+                <div className="temp">
+                  {Math.round(weatherCity1.main.temp)}°F
+                  <br />
+                  {Math.round(FtoC(weatherCity1.main.temp))}°C
+                </div>
+                <div className="weather">{weatherCity1.weather[0].main}</div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div className="city2">
+          <div className="search-box">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search..."
+              onChange={(event) => setQuery2(event.target.value)}
+              value={query2}
+              onKeyPress={handleSearchCity2}
+            />
+          </div>
+          {typeof weatherCity2.main != "undefined" ? (
+            <div
+              className={
+                typeof weatherCity2.main === "undefined"
+                  ? "right"
+                  : `right ${weatherCity2.weather[0].main}`
+              }
+            >
+              <div className="location-box">
+                <div className="location">
+                  {weatherCity2.name}, {weatherCity2.sys.country}
+                </div>
+              </div>
+              <div className="weather-box">
+                <div className="temp">
+                  {Math.round(weatherCity2.main.temp)}°F
+                  <br />
+                  {Math.round(FtoC(weatherCity2.main.temp))}°C
+                </div>
+                <div className="weather">{weatherCity2.weather[0].main}</div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
     </div>
   );
 }
